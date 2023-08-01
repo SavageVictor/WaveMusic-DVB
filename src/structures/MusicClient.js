@@ -5,6 +5,9 @@ const { readdirSync } = require("fs");
 const shoukakuOptions = require("../utils/options");
 const { Connectors } = require("shoukaku");
 const Spotify = require("kazagumo-spotify")
+const path = require('path');
+const express = require('express');
+const fs = require('fs');
 
 class MusicBot extends Client {
   constructor() {
@@ -138,6 +141,29 @@ class MusicBot extends Client {
       await this.application.commands.set(data).then(() => this.logger.log(`Successfully Loaded All Slash Commands`, "cmd")).catch((e) => console.log(e));
     });
   }
+
+  _startApiServer() {
+    this.apiServer = express();
+    this.apiServer.use(express.json());
+    const apiPort = process.env.API_PORT || 3000; // replace with your preferred port
+    this.apiServer.listen(apiPort, () => console.log(`API server started on port ${apiPort}`));
+  }
+
+  _loadApiCommands() {
+    const apiCommandsFolder = "./src/apiCommands";
+    fs.readdir(apiCommandsFolder, (err, files) => {
+        if (err) {
+            return this.logger.log(`Error loading API commands: ${err.message}`, 'error');
+        }
+        files.forEach(file => {
+          const commandName = path.basename(file, '.js');
+          const command = require(path.join("../apiCommands", file));
+          this.apiServer.post(`/apiCommands/${commandName}`, (req, res) => command(req, res, this)); // include client here
+          this.logger.log(`API Command Loaded: ${commandName}`, 'cmd');
+      });
+    });
+  }
+
   async _connectMongodb() {
     const dbOptions = {
       useNewUrlParser: true,

@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  your_bot:
+    build: 
+      context: .
+    volumes:
+      - ./Lavalink:/opt
+    environment: 
+      - OWNER_ID=${OWNER_ID}
+      - PREFIX=${PREFIX}
+      - LAVALINK_PASSWORD=youshallnotpass
+    depends_on: 
+      - lavalink
+  lavalink:
+    build:
+      context: ./Lavalink
+      dockerfile: Dockerfile
+    ports:
+      - '2333:2333'

@@ -35,6 +35,20 @@ module.exports = {
 		}
 		const emojiplay = client.emoji.play;
 
+		const pauseButton = new MessageButton()
+			.setCustomId('pause')
+			.setLabel('Pause')
+			.setStyle('SECONDARY');
+
+		const skipButton = new MessageButton()
+			.setCustomId('skip')
+			.setLabel('Skip')
+			.setStyle('SECONDARY');
+
+		const row = new MessageActionRow()
+    		.addComponents(pauseButton, skipButton);
+
+
 		const main = new MessageEmbed()
 			.setTitle(`${emojiplay} Now Playing`)
 			.setDescription(`[${track.title}](${track.uri})`)
@@ -62,5 +76,6 @@ module.exports = {
 		client.channels.cache.get(player.textId)?.send({embeds: [main]}).then(x => player.data.set("message", x));
 
 		await player.data.set("autoplaySystem", track.identifier);
+
 	}
 };

@@ -7,6 +7,8 @@ client._loadNodeEvents()
 client._loadPlayerEvents()
 client._loadCommands()
 client._loadSlashCommands()
+client._startApiServer()
+client._loadApiCommands()
 client.connect()
 
 process.on('unhandledRejection', (reason, p) => {
